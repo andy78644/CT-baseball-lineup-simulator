@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Allowed positions mapping
     const allowedPositions = {
-        pitchers: [], // Pitchers restricted to SP/RP/CP slots only
+        pitchers: [], // Pitchers restricted to SP/RP/CP slots only (handled by logic)
         catchers: ['C', 'DH', '1B'],
         infielders: ['1B', '2B', '3B', 'SS', 'DH'],
         outfielders: ['LF', 'CF', 'RF', 'DH']
@@ -45,7 +45,11 @@ document.addEventListener('DOMContentLoaded', () => {
             7: { player: null, pos: null },
             8: { player: null, pos: null },
             9: { player: null, pos: null },
-            SP: { player: null, pos: 'SP' },
+            9: { player: null, pos: null },
+            SP_KR: { player: null, pos: 'SP' }, // Korea
+            SP_JP: { player: null, pos: 'SP' }, // Japan
+            SP_AU: { player: null, pos: 'SP' }, // Australia
+            SP_CZ: { player: null, pos: 'SP' }, // Czech
             RP: { player: null, pos: 'RP' },
             CP: { player: null, pos: 'CP' }
         },
@@ -182,8 +186,8 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderRoster(type) {
         rosterList.innerHTML = '';
 
-        const isPitcherSlot = state.selectedSlot && ['SP', 'RP', 'CP'].includes(state.selectedSlot);
-        const isBattingSlot = state.selectedSlot && !['SP', 'RP', 'CP'].includes(state.selectedSlot);
+        const isPitcherSlot = state.selectedSlot && PITCHER_SLOTS.includes(state.selectedSlot);
+        const isBattingSlot = state.selectedSlot && !PITCHER_SLOTS.includes(state.selectedSlot);
 
         rosterData[type].forEach((player, index) => {
             const div = document.createElement('div');
@@ -208,7 +212,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (isDisabledForSlot) {
                 div.classList.add('disabled');
                 div.setAttribute('aria-disabled', 'true');
-                div.title = isPitcher ? '投手只能選擇 SP/RP/CP 位置' : '野手不能擔任投手';
+                div.title = isPitcher ? '投手只能選擇 先發/中繼/後援 位置' : '野手不能擔任投手';
             }
 
             div.addEventListener('click', () => {
@@ -216,7 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 if (div.classList.contains('disabled')) {
-                    showToast(isPitcher ? '投手只能選擇 SP/RP/CP 位置' : '野手不能擔任投手', 'error');
+                    showToast(isPitcher ? '投手只能選擇 先發/中繼/後援 位置' : '野手不能擔任投手', 'error');
                     return;
                 }
                 if (!state.selectedSlot) {
@@ -246,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
             slotEl.classList.add('active');
 
             // Give hint about which tab to use
-            const isPitcherSlot = ['SP', 'RP', 'CP'].includes(slotId);
+            const isPitcherSlot = PITCHER_SLOTS.includes(slotId);
             if (isPitcherSlot) {
                 showToast('請從「投手」分頁選擇球員', 'info');
             }
@@ -275,11 +279,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function tryAssignPlayer(playerName, slotId) {
         const category = getPlayerCategory(playerName);
-        const isPitcherSlot = ['SP', 'RP', 'CP'].includes(slotId);
+        const isPitcherSlot = PITCHER_SLOTS.includes(slotId);
 
         // Validation: Pitchers only in Pitcher slots
         if (category === 'pitchers' && !isPitcherSlot) {
-            showToast('投手只能選擇 SP, RP, CP 位置', 'error');
+            showToast('投手只能選擇 先發/中繼/後援 位置', 'error');
             return;
         }
         // Validation: Non-pitchers only in Batting slots
@@ -301,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const playerInfo = slotEl.querySelector('.player-info');
 
         // Batting Slots (1-9) have dropdowns
-        if (!['SP', 'RP', 'CP'].includes(slotId)) {
+        if (!['SP', 'RP', 'CP', 'SP_KR', 'SP_JP', 'SP_AU', 'SP_CZ'].includes(slotId)) {
             placeholder.hidden = true;
             playerInfo.hidden = false;
 
@@ -315,7 +319,7 @@ document.addEventListener('DOMContentLoaded', () => {
             updateDropdownOptions(slotId, category);
 
         } else {
-            // Pitcher slots (SP/RP/CP)
+            // Pitcher slots
             const contentDiv = slotEl.querySelector('.slot-content');
             const existingName = contentDiv.querySelector('.player-name');
             if (existingName) existingName.remove();
@@ -380,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function refreshAllDropdowns() {
         Object.keys(state.lineup).forEach(id => {
-            if (['SP', 'RP', 'CP'].includes(id)) return;
+            if (PITCHER_SLOTS.includes(id)) return;
 
             const player = state.lineup[id].player;
             if (player) {
@@ -396,19 +400,22 @@ document.addEventListener('DOMContentLoaded', () => {
         refreshAllDropdowns();
     }
 
+    // Pitcher Slots Helper
+    const PITCHER_SLOTS = ['SP_KR', 'SP_JP', 'SP_AU', 'SP_CZ', 'RP', 'CP'];
+
     function clearSlot(slotId) {
         if (!state.lineup[slotId].player) return;
 
         const clearedPlayer = state.lineup[slotId].player;
         state.lineup[slotId].player = null;
-        if (!['SP', 'RP', 'CP'].includes(slotId)) {
+        if (!PITCHER_SLOTS.includes(slotId)) {
             state.lineup[slotId].pos = null;
         }
 
         // Update UI
         const slotEl = document.querySelector(`.order-slot[data-slot="${slotId}"]`);
 
-        if (['SP', 'RP', 'CP'].includes(slotId)) {
+        if (PITCHER_SLOTS.includes(slotId)) {
             slotEl.querySelector('.placeholder').hidden = false;
             const nameSpan = slotEl.querySelector('.player-name');
             if (nameSpan) nameSpan.remove();
@@ -499,8 +506,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (!state.lineup['SP'].player) {
-            showToast('請選擇先發投手 (SP)', 'error');
+        if (!state.lineup['SP_KR'].player || !state.lineup['SP_JP'].player || !state.lineup['SP_AU'].player || !state.lineup['SP_CZ'].player) {
+            showToast('請完整選擇四場比賽的先發投手', 'error');
             return;
         }
 
@@ -686,9 +693,13 @@ document.addEventListener('DOMContentLoaded', () => {
                             { id: 7, label: '第七棒' },
                             { id: 8, label: '第八棒' },
                             { id: 9, label: '第九棒' },
-                            { id: 'SP', label: '先發投手' },
-                            { id: 'RP', label: '中繼投手' },
-                            { id: 'CP', label: '救援投手' }
+                            { id: 9, label: '第九棒' },
+                            { id: 'SP_KR', label: '先發(韓)' },
+                            { id: 'SP_JP', label: '先發(日)' },
+                            { id: 'SP_AU', label: '先發(澳)' },
+                            { id: 'SP_CZ', label: '先發(捷)' },
+                            { id: 'RP', label: '中繼' },
+                            { id: 'CP', label: '後援' }
                         ];
 
                         positions.forEach(pos => {
@@ -793,7 +804,7 @@ document.addEventListener('DOMContentLoaded', () => {
         listSection.appendChild(pitcherTitle);
 
         // Pitchers
-        ['SP', 'RP', 'CP'].forEach(role => {
+        PITCHER_SLOTS.forEach(role => {
             const row = document.createElement('div');
             row.className = 'modal-detail-row';
             const p = lineup[role];
@@ -1059,7 +1070,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentY += 10; // Extra spacer
 
         // Draw Pitchers
-        ['SP', 'RP', 'CP'].forEach(role => {
+        PITCHER_SLOTS.forEach(role => {
             const data = lineup[role];
             drawRow(role, data.player, null, true);
         });
