@@ -473,7 +473,130 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================
     // Submit Handler
     // ============================================
-    submitBtn.addEventListener('click', async () => {
+    submitBtn.addEventListener('click', handleSubmit);
+
+    // ============================================
+    // Search Handler
+    // ============================================
+    const searchBtn = document.getElementById('searchBtn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', async () => {
+            const name = document.getElementById('coachName').value.trim();
+            const email = document.getElementById('coachEmail').value.trim();
+
+            if (!name || !email) {
+                showToast('請先輸入姓名和 Email 才能搜尋', 'error');
+                return;
+            }
+
+            // Button loading state
+            const originalContent = searchBtn.innerHTML;
+            searchBtn.disabled = true;
+            searchBtn.innerHTML = `
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="animation: spin 1s linear infinite;">
+                    <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"></circle>
+                </svg>
+                搜尋中...
+            `;
+
+            try {
+                const res = await fetch(`/api/lineups?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`);
+                const data = await res.json();
+
+                if (data.found && data.data) {
+                    const loadedLineup = JSON.parse(data.data.lineup);
+
+                    // Load into state
+                    // Load into state with backward compatibility
+                    // Ensure new slots (SP_KR, etc.) exist even if loading old data
+                    const defaultStructure = {
+                        SP_KR: { player: null, pos: 'SP' },
+                        SP_JP: { player: null, pos: 'SP' },
+                        SP_AU: { player: null, pos: 'SP' },
+                        SP_CZ: { player: null, pos: 'SP' },
+                        RP: { player: null, pos: 'RP' },
+                        CP: { player: null, pos: 'CP' }
+                    };
+                    for (let i = 1; i <= 9; i++) {
+                        defaultStructure[i] = { player: null, pos: null };
+                    }
+
+                    state.lineup = { ...defaultStructure, ...loadedLineup };
+
+                    // Update UI
+                    updateFieldView();
+
+                    // Refresh all slot UIs
+                    Object.keys(state.lineup).forEach(slotId => {
+                        const slotEl = document.querySelector(`.order-slot[data-slot="${slotId}"]`);
+                        if (!slotEl) return;
+
+                        const pData = state.lineup[slotId];
+                        if (pData && pData.player) {
+                            if (PITCHER_SLOTS.includes(slotId)) {
+                                slotEl.querySelector('.placeholder').hidden = true;
+                                const contentDiv = slotEl.querySelector('.slot-content');
+                                const existingName = contentDiv.querySelector('.player-name');
+                                if (existingName) existingName.remove();
+
+                                const nameSpan = document.createElement('span');
+                                nameSpan.className = 'player-name';
+                                nameSpan.textContent = pData.player;
+                                contentDiv.appendChild(nameSpan);
+                            } else {
+                                slotEl.querySelector('.placeholder').hidden = true;
+                                const playerInfo = slotEl.querySelector('.player-info');
+                                playerInfo.hidden = false;
+                                playerInfo.querySelector('.player-name').textContent = pData.player;
+
+                                const category = getPlayerCategory(pData.player);
+                                updateDropdownOptions(slotId, category);
+
+                                const select = playerInfo.querySelector('.pos-select');
+                                select.value = pData.pos || "";
+                            }
+
+                            const clearBtn = slotEl.querySelector('.clear-btn');
+                            if (clearBtn) clearBtn.hidden = false;
+                        }
+                    });
+
+                    refreshAllDropdowns();
+                    showToast('找到之前的陣容！已載入', 'success');
+
+                    // Change Submit Button to "Update"
+                    submitBtn.innerHTML = `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 8px;">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        更新陣容
+                    `;
+                } else {
+                    showToast('查無資料，您可以提交新陣容', 'info');
+                    // Reset Submit Status
+                    submitBtn.innerHTML = `
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 8px;">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        提交陣容
+                    `;
+                }
+            } catch (err) {
+                console.error(err);
+                showToast('搜尋發生錯誤', 'error');
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.innerHTML = originalContent;
+            }
+        });
+    }
+
+    // ============================================
+    // Submit Handler
+    // ============================================
+    async function handleSubmit() {
         const name = document.getElementById('coachName').value.trim();
         const email = document.getElementById('coachEmail').value.trim();
 
@@ -547,7 +670,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (data.error) {
                 showToast('錯誤: ' + data.error, 'error');
             } else {
-                showToast('陣容提交成功！🎉', 'success', 4000);
+                if (data.message === 'updated') {
+                    showToast('陣容更新成功！🎉', 'success', 4000);
+                } else {
+                    showToast('陣容提交成功！🎉', 'success', 4000);
+                }
                 fetchHistory();
             }
         } catch (err) {
@@ -556,14 +683,19 @@ document.addEventListener('DOMContentLoaded', () => {
             // Re-enable button
             submitBtn.disabled = false;
             submitBtn.style.opacity = '1';
+
+            // Check if we are in update mode or create mode
+            // Actually, keep it simple for now, maybe reset?
+            // User might want to update again. Let's keep "Update" if it was update.
+            // Or just generic "Submit/Update"
             submitBtn.innerHTML = `
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 8px;">
                     <polyline points="20 6 9 17 4 12"></polyline>
                 </svg>
-                提交陣容
+                提交/更新陣容
             `;
         }
-    });
+    }
 
     // ============================================
     // Modal

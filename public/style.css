@@ -602,6 +602,39 @@ h3 {
     transform: translateY(0);
 }
 
+.secondary-btn {
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 14px 24px;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.secondary-btn:hover {
+    background: rgba(251, 191, 36, 0.1);
+    box-shadow: 0 0 12px var(--accent-glow);
+    transform: translateY(-1px);
+}
+
+.secondary-btn:active {
+    transform: translateY(0);
+}
+
+.secondary-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+}
+
 /* ============================================
    Field Panel - Baseball Diamond
    ============================================ */
