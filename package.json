@@ -2,7 +2,8 @@
   "name": "baseball-lineup-selector",
   "version": "1.0.0",
   "description": "Simple baseball lineup selector for Chinese Taipei team",
-  "main": "server.js",
+  "type": "module",
+  "main": "api/lineups.js",
   "scripts": {
     "dev": "vercel dev",
     "deploy": "vercel --prod"
