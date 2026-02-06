@@ -1,0 +1,1249 @@
+/* ============================================
+   中華隊先發陣容預測 - UI/UX Pro Max Design System
+   Taiwan Baseball Lineup Selector
+   ============================================ */
+
+/* CSS Variables - Sports Theme with Dark Mode */
+:root {
+    /* Primary Colors - Taiwan Team Red */
+    --primary: #DC2626;
+    --primary-light: #EF4444;
+    --primary-dark: #B91C1C;
+    --primary-glow: rgba(220, 38, 38, 0.5);
+
+    /* Accent Colors - Championship Gold */
+    --accent: #FBBF24;
+    --accent-light: #FCD34D;
+    --accent-dark: #D97706;
+    --accent-glow: rgba(251, 191, 36, 0.5);
+
+    /* Background - OLED Optimized Dark */
+    --bg-dark: #0A0E27;
+    --bg-darker: #050816;
+    --bg-card: rgba(255, 255, 255, 0.06);
+    --bg-card-hover: rgba(255, 255, 255, 0.10);
+
+    /* Text Colors */
+    --text-main: #FFFFFF;
+    --text-secondary: #E2E8F0;
+    --text-muted: #94A3B8;
+
+    /* Border & Glass Effects */
+    --border: rgba(255, 255, 255, 0.10);
+    --border-hover: rgba(255, 255, 255, 0.20);
+    --glass-border: rgba(255, 255, 255, 0.15);
+    --blur-amount: 16px;
+
+    /* Semantic Colors */
+    --success: #22C55E;
+    --success-glow: rgba(34, 197, 94, 0.4);
+    --danger: #EF4444;
+    --info: #38BDF8;
+
+    /* Spacing */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 24px;
+
+    /* Transitions */
+    --transition-fast: 150ms ease-out;
+    --transition-normal: 250ms ease-out;
+    --transition-slow: 400ms ease-out;
+}
+
+/* Reset & Base */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    /* Comprehensive Chinese font stack with system fallbacks */
+    font-family:
+        'Noto Sans TC',
+        'PingFang TC',
+        /* macOS */
+        'Microsoft JhengHei',
+        /* Windows */
+        'Heiti TC',
+        /* macOS fallback */
+        -apple-system,
+        BlinkMacSystemFont,
+        'Segoe UI',
+        sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-main);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* Animated Background */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background:
+        radial-gradient(ellipse at 20% 80%, rgba(220, 38, 38, 0.15) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(251, 191, 36, 0.10) 0%, transparent 50%),
+        radial-gradient(ellipse at 50% 50%, rgba(56, 189, 248, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: -1;
+}
+
+/* App Container */
+.app-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+/* ============================================
+   Header - Dynamic Gradient Title
+   ============================================ */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 20px 0;
+}
+
+header h1 {
+    font-family: 'Noto Sans TC', 'Fira Sans', sans-serif;
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    margin: 0 0 8px 0;
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 50%, var(--primary-light) 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 4s ease-in-out infinite;
+    text-shadow: 0 0 40px var(--primary-glow);
+    letter-spacing: -0.02em;
+}
+
+@keyframes gradientShift {
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+header p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin: 0;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+}
+
+/* ============================================
+   Card - Glassmorphism Base
+   ============================================ */
+.card {
+    background: var(--bg-card);
+    backdrop-filter: blur(var(--blur-amount));
+    -webkit-backdrop-filter: blur(var(--blur-amount));
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    border: 1px solid var(--glass-border);
+    box-shadow:
+        0 4px 24px -4px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    transition:
+        transform var(--transition-normal),
+        box-shadow var(--transition-normal),
+        border-color var(--transition-normal);
+}
+
+.card:hover {
+    border-color: var(--border-hover);
+}
+
+/* ============================================
+   User Info Section
+   ============================================ */
+.user-info {
+    margin-bottom: 24px;
+}
+
+.user-info h2 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-info .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    border-radius: 50%;
+    font-size: 14px;
+}
+
+.input-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.input-group input {
+    flex: 1;
+    min-width: 200px;
+    padding: 14px 18px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg-darker);
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 1rem;
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.input-group input::placeholder {
+    color: var(--text-muted);
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* ============================================
+   Workspace 3-Column Layout
+   ============================================ */
+.workspace {
+    display: grid;
+    grid-template-columns: 280px 1fr 420px;
+    gap: 24px;
+    align-items: start;
+}
+
+/* ============================================
+   Section Headings
+   ============================================ */
+h2 {
+    font-family: 'Noto Sans TC', 'Fira Sans', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-main);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin: 0 0 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+/* ============================================
+   Roster Panel - Tabs
+   ============================================ */
+.tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    background: var(--bg-darker);
+    padding: 4px;
+    border-radius: var(--radius-md);
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition:
+        background var(--transition-fast),
+        color var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.tab-btn:hover {
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    font-weight: 600;
+    box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+/* ============================================
+   Roster List
+   ============================================ */
+.roster-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 520px;
+    overflow-y: auto;
+    padding-right: 8px;
+}
+
+/* Custom Scrollbar */
+.roster-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.roster-list::-webkit-scrollbar-track {
+    background: var(--bg-darker);
+    border-radius: 3px;
+}
+
+.roster-list::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.roster-list::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* Player Cards */
+.player-card {
+    background: var(--bg-darker);
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    border: 1px solid transparent;
+    font-weight: 500;
+    font-size: 1rem;
+    line-height: 1.4;
+    font-family: 'Noto Sans TC', 'PingFang TC', 'Microsoft JhengHei', -apple-system, sans-serif;
+    position: relative;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.player-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: var(--primary);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.player-card:hover {
+    border-color: var(--primary);
+    background: var(--bg-card-hover);
+    transform: translateX(4px);
+}
+
+.player-card:hover::before {
+    opacity: 1;
+}
+
+.player-card.selected {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: rgba(0, 0, 0, 0.3);
+    border-color: transparent;
+}
+
+.player-card.selected:hover {
+    transform: none;
+}
+
+.player-card.selected::before {
+    opacity: 0;
+}
+
+/* Disabled state - pitcher in batting slot or vice versa */
+.player-card.disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    background: rgba(100, 100, 100, 0.2);
+    border-color: transparent;
+}
+
+.player-card.disabled:hover {
+    transform: none;
+    border-color: transparent;
+}
+
+.player-card.disabled::before {
+    opacity: 0;
+}
+
+/* ============================================
+   Lineup Panel
+   ============================================ */
+.lineup-panel {
+    min-height: 600px;
+}
+
+.batting-order {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Order Slot */
+.order-slot {
+    display: flex;
+    align-items: center;
+    background: var(--bg-darker);
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    gap: 14px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition:
+        border-color var(--transition-fast),
+        background var(--transition-fast),
+        transform var(--transition-fast);
+}
+
+.order-slot:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--border);
+}
+
+.order-slot.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 16px var(--accent-glow);
+    background: rgba(251, 191, 36, 0.05);
+}
+
+/* Slot Number Badge */
+.slot-num {
+    font-family: 'Fira Code', monospace;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: white;
+    flex-shrink: 0;
+    box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+/* Slot Content */
+.slot-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 24px;
+}
+
+.slot-content .placeholder {
+    color: var(--text-muted);
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.slot-content .player-name {
+    font-weight: 600;
+    color: var(--accent);
+    font-size: 1rem;
+}
+
+/* Player Info with Position Select */
+.player-info {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.pos-select {
+    font-family: 'Fira Code', monospace;
+    background: var(--bg-card);
+    color: var(--accent);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.pos-select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+/* Clear Button */
+.clear-btn {
+    background: none;
+    border: none;
+    color: var(--danger);
+    cursor: pointer;
+    font-size: 1.4rem;
+    padding: 4px 8px;
+    line-height: 1;
+    opacity: 0.7;
+    transition:
+        opacity var(--transition-fast),
+        transform var(--transition-fast);
+    border-radius: var(--radius-sm);
+}
+
+.clear-btn:hover {
+    opacity: 1;
+    background: rgba(239, 68, 68, 0.1);
+    transform: scale(1.1);
+}
+
+/* ============================================
+   Pitcher Slots
+   ============================================ */
+.pitcher-slots {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px dashed var(--border);
+}
+
+.pitcher-slots .slot-num {
+    background: linear-gradient(135deg, var(--info), #0EA5E9);
+    font-size: 0.75rem;
+    box-shadow: 0 2px 8px rgba(56, 189, 248, 0.4);
+}
+
+/* ============================================
+   Action Buttons
+   ============================================ */
+.actions {
+    margin-top: 28px;
+}
+
+.primary-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+    color: white;
+    border: none;
+    padding: 16px 32px;
+    border-radius: var(--radius-md);
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast);
+    box-shadow: 0 4px 16px var(--primary-glow);
+    position: relative;
+    overflow: hidden;
+}
+
+.primary-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+}
+
+.primary-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--primary-glow);
+}
+
+.primary-btn:hover::before {
+    transform: translateX(100%);
+}
+
+.primary-btn:active {
+    transform: translateY(0);
+}
+
+/* ============================================
+   Field Panel - Baseball Diamond
+   ============================================ */
+.field-panel {
+    position: sticky;
+    top: 24px;
+}
+
+.baseball-field {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    background: url('field.svg') no-repeat center center;
+    background-size: cover;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 4px solid #4a2e18;
+    background-color: #2e5a1c;
+    box-shadow:
+        inset 0 0 50px rgba(0, 0, 0, 0.3),
+        0 8px 32px rgba(0, 0, 0, 0.4);
+    /* Ensure minimum size for legibility */
+    min-width: 280px;
+    min-height: 280px;
+}
+
+/* Remove CSS drawing hacks */
+.field-dirt,
+.field-grass {
+    display: none;
+}
+
+/* Position Markers */
+.field-pos {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: rgba(10, 14, 39, 0.95);
+    color: white;
+    padding: 4px 6px;
+    border-radius: var(--radius-sm);
+    font-family: 'Noto Sans TC', 'Fira Code', monospace;
+    font-size: 0.65rem;
+    white-space: nowrap;
+    z-index: 10;
+    text-align: center;
+    min-width: 36px;
+    max-width: 70px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background var(--transition-fast);
+}
+
+.field-pos:hover {
+    transform: translate(-50%, -50%) scale(1.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+    z-index: 20;
+}
+
+.field-pos span {
+    display: block;
+    font-size: 0.55rem;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 1px;
+    line-height: 1.2;
+}
+
+.field-pos strong {
+    font-size: 0.6rem;
+    color: white;
+    display: block;
+    font-weight: 600;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Filled Position */
+.field-pos.filled {
+    background: linear-gradient(135deg, var(--success), #16A34A);
+    border-color: var(--success);
+    box-shadow: 0 2px 12px var(--success-glow);
+}
+
+.field-pos.filled span {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Position Coordinates - Based on reference baseball field layout */
+/* The field is viewed from behind home plate looking out */
+
+/* Catcher - at home plate */
+.p-c {
+    bottom: 8%;
+    left: 50%;
+}
+
+/* Pitcher/SP - on the mound, center of diamond */
+.p-sp {
+    bottom: 35%;
+    left: 50%;
+}
+
+/* First Base - right corner of infield diamond */
+.p-1b {
+    bottom: 40%;
+    left: 72%;
+}
+
+/* Second Base - right of center, between SS and 1B */
+.p-2b {
+    bottom: 55%;
+    left: 60%;
+}
+
+/* Shortstop - left of center, between 3B and 2B */
+.p-ss {
+    bottom: 55%;
+    left: 40%;
+}
+
+/* Third Base - left corner of infield diamond */
+.p-3b {
+    bottom: 40%;
+    left: 28%;
+}
+
+/* Left Field - outfield left, angled toward center */
+.p-lf {
+    top: 22%;
+    left: 22%;
+}
+
+/* Center Field - deep center */
+.p-cf {
+    top: 8%;
+    left: 50%;
+}
+
+/* Right Field - outfield right, angled toward center */
+.p-rf {
+    top: 22%;
+    left: 78%;
+}
+
+/* DH - positioned outside the field near home plate */
+.p-dh {
+    bottom: 8%;
+    left: 22%;
+}
+
+/* ============================================
+   History Section
+   ============================================ */
+.history-section {
+    margin-top: 32px;
+}
+
+.history-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+}
+
+.history-item {
+    background: var(--bg-darker);
+    padding: 20px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition:
+        transform var(--transition-fast),
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast);
+}
+
+.history-item:hover {
+    border-color: var(--primary);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(220, 38, 38, 0.2);
+}
+
+.history-item h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-main);
+    margin: 0 0 8px 0;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+.history-item p {
+    margin: 6px 0;
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   Modal - Glassmorphism
+   ============================================ */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 14, 39, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 24px;
+    animation: fadeIn var(--transition-normal);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-content {
+    background: var(--bg-card);
+    backdrop-filter: blur(var(--blur-amount));
+    padding: 32px;
+    border-radius: var(--radius-xl);
+    width: 100%;
+    max-width: 700px;
+    border: 1px solid var(--glass-border);
+    position: relative;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.5);
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-content h2 {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 24px;
+    text-align: center;
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.close-modal {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition:
+        background var(--transition-fast),
+        color var(--transition-fast);
+}
+
+.close-modal:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.modal-detail-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: var(--bg-darker);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+}
+
+.modal-detail-row:nth-child(odd) {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+/* ============================================
+   Mini Field Diagram (for Modal)
+   ============================================ */
+.mini-field {
+    width: 100%;
+}
+
+.mini-baseball-field {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
+    background: url('field.svg') no-repeat center center;
+    background-size: cover;
+    background-color: #2e5a1c;
+    border-radius: var(--radius-md);
+    border: 3px solid #4a2e18;
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.mini-field-pos {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    background: rgba(10, 14, 39, 0.95);
+    color: white;
+    padding: 3px 5px;
+    border-radius: 4px;
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.5rem;
+    white-space: nowrap;
+    text-align: center;
+    min-width: 28px;
+    max-width: 55px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+    z-index: 5;
+}
+
+.mini-field-pos span {
+    display: block;
+    font-size: 0.45rem;
+    color: var(--accent);
+    font-weight: 600;
+    line-height: 1.1;
+}
+
+.mini-field-pos strong {
+    font-size: 0.5rem;
+    color: white;
+    display: block;
+    font-weight: 500;
+    line-height: 1.1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.mini-field-pos.filled {
+    background: linear-gradient(135deg, var(--success), #16A34A);
+    border-color: var(--success);
+}
+
+.mini-field-pos.filled span {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+/* Mini field position coordinates */
+.mini-p-c {
+    bottom: 8%;
+    left: 50%;
+}
+
+.mini-p-sp {
+    bottom: 35%;
+    left: 50%;
+}
+
+.mini-p-1b {
+    bottom: 40%;
+    left: 72%;
+}
+
+.mini-p-2b {
+    bottom: 55%;
+    left: 60%;
+}
+
+.mini-p-ss {
+    bottom: 55%;
+    left: 40%;
+}
+
+.mini-p-3b {
+    bottom: 40%;
+    left: 28%;
+}
+
+.mini-p-lf {
+    top: 22%;
+    left: 22%;
+}
+
+.mini-p-cf {
+    top: 8%;
+    left: 50%;
+}
+
+.mini-p-rf {
+    top: 22%;
+    left: 78%;
+}
+
+.mini-p-dh {
+    bottom: 8%;
+    left: 22%;
+}
+
+/* Share Button */
+.share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 12px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, var(--primary), #9333EA);
+    color: white;
+    border: none;
+    border-radius: var(--radius-md);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.share-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4);
+}
+
+.share-btn:active {
+    transform: translateY(0);
+}
+
+.share-btn svg {
+    flex-shrink: 0;
+}
+
+/* ============================================
+   Toast Notifications
+   ============================================ */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 2000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.toast {
+    background: var(--bg-card);
+    backdrop-filter: blur(var(--blur-amount));
+    border: 1px solid var(--glass-border);
+    padding: 16px 24px;
+    border-radius: var(--radius-md);
+    color: var(--text-main);
+    font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    animation: toastSlideIn 0.3s ease-out;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toast.success {
+    border-left: 4px solid var(--success);
+}
+
+.toast.error {
+    border-left: 4px solid var(--danger);
+}
+
+.toast.info {
+    border-left: 4px solid var(--info);
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+@media (max-width: 1200px) {
+    .workspace {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .roster-panel {
+        order: 1;
+    }
+
+    .lineup-panel {
+        order: 2;
+    }
+
+    .field-panel {
+        order: 3;
+        grid-column: span 2;
+        max-width: 400px;
+        justify-self: center;
+    }
+}
+
+@media (max-width: 768px) {
+    .app-container {
+        padding: 16px;
+    }
+
+    .workspace {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .field-panel {
+        grid-column: span 1;
+        order: -1;
+    }
+
+    .input-group {
+        flex-direction: column;
+    }
+
+    .tabs {
+        flex-wrap: wrap;
+    }
+
+    .tab-btn {
+        flex: 1 1 40%;
+    }
+
+    header h1 {
+        font-size: 1.75rem;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .history-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* Smaller position markers on small screens */
+    .field-pos {
+        padding: 4px 6px;
+        font-size: 0.65rem;
+        min-width: 40px;
+    }
+
+    .field-pos span {
+        font-size: 0.6rem;
+    }
+
+    .field-pos strong {
+        font-size: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .slot-num {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+
+    .order-slot {
+        padding: 10px 12px;
+        gap: 10px;
+    }
+
+    .primary-btn {
+        padding: 14px 24px;
+        font-size: 1rem;
+    }
+}
+
+/* ============================================
+   Accessibility - Reduced Motion
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    header h1 {
+        animation: none;
+    }
+}
+
+/* ============================================
+   Focus States for Keyboard Navigation
+   ============================================ */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+.tab-btn:focus-visible,
+.player-card:focus-visible,
+.order-slot:focus-visible,
+.primary-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* ============================================
+   Selection & Highlight
+   ============================================ */
+::selection {
+    background: var(--primary);
+    color: white;
+}
