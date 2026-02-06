@@ -266,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const allowed = allowedPositions[category] || ['DH'];
         const used = [];
         Object.entries(state.lineup).forEach(([id, data]) => {
-            if (id !== currentSlotId.toString() && data.pos && data.pos !== 'DH') {
+            if (id !== currentSlotId.toString() && data.pos) {
                 used.push(data.pos);
             }
         });
@@ -490,9 +490,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!state.lineup[i].player || !state.lineup[i].pos) {
                 missing = true;
             } else {
-                if (state.lineup[i].pos !== 'DH') {
-                    usedPos.push(state.lineup[i].pos);
-                }
+                usedPos.push(state.lineup[i].pos);
             }
         }
 
