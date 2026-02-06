@@ -1143,8 +1143,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const ctx = canvas.getContext('2d');
 
         // Canvas dimensions
-        const width = 450;
-        const height = 650; // Taller for list
+        // Canvas dimensions
+        const width = 500;
+        const height = 800; // Taller for list
         canvas.width = width;
         canvas.height = height;
 
@@ -1183,7 +1184,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Player Name
             ctx.fillStyle = '#ffffff';
             ctx.font = 'bold 20px "Noto Sans TC", sans-serif';
-            ctx.fillText(player || '-', 100, currentY);
+            ctx.fillText(player || '-', 150, currentY);
 
             // Position
             if (pos) {
