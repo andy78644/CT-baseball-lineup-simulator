@@ -583,6 +583,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         提交陣容
                     `;
                 }
+
+                // Show Share Buttons if found
+                const mainShareButtons = document.getElementById('mainShareButtons');
+                if (mainShareButtons) {
+                    mainShareButtons.hidden = false;
+                }
             } catch (err) {
                 console.error(err);
                 showToast('搜尋發生錯誤', 'error');
@@ -645,10 +651,10 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
         submitBtn.style.opacity = '0.7';
         submitBtn.innerHTML = `
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 8px; animation: spin 1s linear infinite;">
-                <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"></circle>
-            </svg>
-            提交中...
+                        < svg width = "20" height = "20" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2.5" style = "vertical-align: middle; margin-right: 8px; animation: spin 1s linear infinite;" >
+                            <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"></circle>
+            </svg >
+                        提交中...
         `;
 
         // Prepare Payload
@@ -675,6 +681,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else {
                     showToast('陣容提交成功！🎉', 'success', 4000);
                 }
+
+                // Show Share Buttons
+                const mainShareButtons = document.getElementById('mainShareButtons');
+                if (mainShareButtons) mainShareButtons.hidden = false;
+
                 fetchHistory();
             }
         } catch (err) {
@@ -689,11 +700,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // User might want to update again. Let's keep "Update" if it was update.
             // Or just generic "Submit/Update"
             submitBtn.innerHTML = `
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 8px;">
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-                提交/更新陣容
-            `;
+        < svg width = "20" height = "20" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2.5" style = "vertical-align: middle; margin-right: 8px;" >
+        <polyline points="20 6 9 17 4 12"></polyline>
+                </svg >
+            提交 / 更新陣容
+                `;
         }
     }
 
@@ -747,7 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const sp = lineup['SP'] ? lineup['SP'].player : '未定';
 
                         card.innerHTML = `
-                            <h3>${item.name}</h3>
+        < h3 > ${item.name}</h3 >
                             <p style="color: var(--text-muted); font-size: 0.8rem;">${new Date(item.created_at).toLocaleString('zh-TW')}</p>
                             <p>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
@@ -805,10 +816,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             const th = document.createElement('th');
                             // Fix: Use item.name instead of item.coach_name
                             th.innerHTML = `
-                                <div>${item.name}</div>
-                                <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal; margin-top: 4px;">
-                                    ${new Date(item.created_at).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' })}
-                                </div>
+            < div > ${item.name}</div >
+        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal; margin-top: 4px;">
+            ${new Date(item.created_at).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' })}
+        </div>
                             `;
                             headerTr.appendChild(th);
                         });
@@ -857,11 +868,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                                 if (data && data.player) {
                                     if (['SP', 'RP', 'CP'].includes(pos.id)) {
-                                        td.innerHTML = `<span style="font-weight:500; color: var(--info);">${data.player}</span>`;
+                                        td.innerHTML = `< span style = "font-weight:500; color: var(--info);" > ${data.player}</span > `;
                                     } else {
                                         td.innerHTML = `
-                                            <div style="font-weight:500;">${data.player}</div>
-                                            <div style="font-size: 0.75rem; color: var(--accent); font-family: monospace;">${data.pos}</div>
+        < div style = "font-weight:500;" > ${data.player}</div >
+        <div style="font-size: 0.75rem; color: var(--accent); font-family: monospace;">${data.pos}</div>
                                         `;
                                     }
                                 } else {
@@ -877,7 +888,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 } else {
                     historyContainer.innerHTML = `
-                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+            < div style = "grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);" >
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 12px; opacity: 0.5;">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                                 <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -886,8 +897,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             </svg>
                             <p>尚無其他鍵盤教練的陣容</p>
                             <p style="font-size: 0.9rem;">成為第一個提交陣容的鍵盤教練吧！</p>
-                        </div>
-                    `;
+                        </div >
+            `;
                 }
             })
             .catch(err => {
@@ -917,7 +928,7 @@ document.addEventListener('DOMContentLoaded', () => {
             row.className = 'modal-detail-row';
             const p = lineup[i];
             row.innerHTML = `
-                <span style="color: var(--text-muted); font-family: 'Fira Code', monospace; font-weight: 600;">#${i}</span>
+        < span style = "color: var(--text-muted); font-family: 'Fira Code', monospace; font-weight: 600;" > #${i}</span >
                 <span style="font-weight: 500;">${p.player || '-'}</span>
                 <span style="color: var(--accent); font-family: 'Fira Code', monospace; font-weight: 600;">${p.pos || '-'}</span>
             `;
@@ -941,7 +952,7 @@ document.addEventListener('DOMContentLoaded', () => {
             row.className = 'modal-detail-row';
             const p = lineup[role];
             row.innerHTML = `
-                <span style="color: var(--info); font-family: 'Fira Code', monospace; font-weight: 600;">${role}</span>
+            < span style = "color: var(--info); font-family: 'Fira Code', monospace; font-weight: 600;" > ${role}</span >
                 <span style="font-weight: 500;">${p.player || '-'}</span>
                 <span></span>
             `;
@@ -972,27 +983,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const shareFieldBtn = document.createElement('button');
         shareFieldBtn.className = 'share-btn';
         shareFieldBtn.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            < svg width = "16" height = "16" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2" >
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg>
+            </svg >
             複製守備圖
-        `;
+                `;
         shareFieldBtn.addEventListener('click', () => copyFieldAsImage(name, lineup));
 
         // Button 2: Copy List Image
         const shareListBtn = document.createElement('button');
         shareListBtn.className = 'share-btn';
         shareListBtn.innerHTML = `
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            < svg width = "16" height = "16" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2" >
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="16" y1="13" x2="8" y2="13"></line>
                 <line x1="16" y1="17" x2="8" y2="17"></line>
                 <polyline points="10 9 9 9 8 9"></polyline>
-            </svg>
+            </svg >
             複製打序表
-        `;
+                `;
         shareListBtn.addEventListener('click', () => copyLineupAsTextListImage(name, lineup));
 
         btnContainer.appendChild(shareFieldBtn);
@@ -1246,18 +1257,39 @@ document.addEventListener('DOMContentLoaded', () => {
         positions.forEach(pos => {
             const data = positionMap[pos];
             const isFilled = data && data.player;
-            const battingLabel = data && data.battingOrder ? `${data.battingOrder}棒 ` : '';
+            const battingLabel = data && data.battingOrder ? `${data.battingOrder}棒` : '';
             const playerName = data ? data.player : '';
 
             html += `
-                <div class="mini-field-pos mini-p-${pos.toLowerCase()} ${isFilled ? 'filled' : ''}">
-                    <span>${battingLabel}${pos}</span>
+        < div class= "mini-field-pos mini-p-${pos.toLowerCase()} ${isFilled ? 'filled' : ''}" >
+        <span>${battingLabel}${pos}</span>
                     ${isFilled ? `<strong>${playerName}</strong>` : ''}
-                </div>
-            `;
+                </div >
+        `;
         });
 
         html += '</div>';
         return html;
+    }
+
+    // ============================================
+    // Main Page Share Buttons Logic
+    // ============================================
+    const mainShareFieldBtn = document.getElementById('mainShareFieldBtn');
+    const mainShareListBtn = document.getElementById('mainShareListBtn');
+
+    if (mainShareFieldBtn) {
+        mainShareFieldBtn.addEventListener('click', () => {
+            const name = document.getElementById('coachName').value.trim() || '鍵盤教練';
+            // Need to ensure copyFieldAsImage is available. It is defined in this scope.
+            copyFieldAsImage(name, state.lineup);
+        });
+    }
+
+    if (mainShareListBtn) {
+        mainShareListBtn.addEventListener('click', () => {
+            const name = document.getElementById('coachName').value.trim() || '鍵盤教練';
+            copyLineupAsTextListImage(name, state.lineup);
+        });
     }
 });

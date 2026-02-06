@@ -797,6 +797,31 @@ h3 {
     margin-top: 32px;
 }
 
+#mainShareButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+#mainShareButtons .share-btn {
+    width: auto;
+    margin-top: 0;
+    font-size: 0.9rem;
+    padding: 8px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+}
+
+#mainShareButtons .share-btn:hover {
+    background: var(--bg-card-hover);
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
 .history-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
