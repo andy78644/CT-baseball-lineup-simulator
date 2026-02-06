@@ -34,99 +34,57 @@ open http://localhost:3000
 - Node.js 18+
 - npm 或 yarn
 
-## 📦 部署到 Vercel
+## 📦 部署到 Vercel (使用 Vercel Postgres)
 
-### 方法一：一鍵部署
+### 1. 初始設定
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/YOUR_REPO)
+1. **安裝 Vercel CLI** (若尚未安裝)
+   ```bash
+   npm install -g vercel
+   ```
 
-### 方法二：手動部署
+2. **連結 Vercel 專案**
+   ```bash
+   vercel
+   ```
 
-1. **安裝 Vercel CLI**
+3. **建立資料庫**
+   - 前往 [Vercel Dashboard](https://vercel.com/dashboard)
+   - 進入你的專案 → **Storage** tab
+   - 點擊 **Create Database** → 選擇 **Postgres**
+   - 選擇 Region (建議選擇離台灣近的，如 Simple/Singapore 或 Tokyo)
+   - 點擊 **Create** 並等待建立完成
+
+4. **初始化資料表**
+   - 在 Postgres 頁面左側點擊 **Query**
+   - 貼上以下 SQL 指令並按 **Run Query**：
+   
+   ```sql
+   CREATE TABLE IF NOT EXISTS lineups (
+       id SERIAL PRIMARY KEY,
+       name TEXT NOT NULL,
+       email TEXT,
+       lineup TEXT NOT NULL,
+       created_at TIMESTAMP DEFAULT NOW()
+   );
+   ```
+
+### 2. 本地開發
+
+若要在本地測試 Vercel Postgres，需要拉取環境變數：
 
 ```bash
-npm install -g vercel
+vercel env pull .env.development.local
+npm install
+vercel dev
 ```
 
-2. **登入 Vercel**
+開啟 `http://localhost:3000` 進行測試。
 
-```bash
-vercel login
-```
-
-3. **部署專案**
-
-```bash
-cd 先發打序
-vercel
-```
-
-4. **首次部署設定**
-
-當 Vercel CLI 詢問時：
-- `Set up and deploy?` → `Y`
-- `Which scope?` → 選擇你的帳號
-- `Link to existing project?` → `N`
-- `Project name?` → 輸入專案名稱（如 `taiwan-baseball-lineup`）
-- `In which directory is your code located?` → `./`
-- `Override settings?` → `N`
-
-5. **部署到正式環境**
+### 3. 部署到正式環境
 
 ```bash
 vercel --prod
-```
-
-### 方法三：連結 GitHub 自動部署
-
-1. 將專案推送到 GitHub
-
-```bash
-git init
-git add .
-git commit -m "Initial commit"
-git remote add origin https://github.com/YOUR_USERNAME/YOUR_REPO.git
-git push -u origin main
-```
-
-2. 前往 [Vercel Dashboard](https://vercel.com/dashboard)
-
-3. 點擊 `Add New...` → `Project`
-
-4. 選擇你的 GitHub repository
-
-5. 設定完成後點擊 `Deploy`
-
-6. 之後每次 push 到 main 分支都會自動部署！
-
-## ⚙️ Vercel 設定檔 (可選)
-
-如需自訂設定，建立 `vercel.json`：
-
-```json
-{
-  "version": 2,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "public/**",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "public/$1"
-    }
-  ]
-}
 ```
 
 ## 📁 專案結構
