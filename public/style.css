@@ -803,6 +803,123 @@ h3 {
 }
 
 /* ============================================
+   Comparison Table Section
+   ============================================ */
+/* ============================================
+   Comparison Table Section
+   ============================================ */
+.comparison-section {
+    margin-top: 32px;
+    width: 100%;
+    margin-bottom: 60px;
+}
+
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg-darker);
+    /* Custom Scrollbar styling */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) var(--bg-darker);
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    /* Required for sticky headers to work with borders nicely */
+    border-spacing: 0;
+    white-space: nowrap;
+    font-size: 0.95rem;
+}
+
+th,
+td {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Header Row (Coach Names) */
+th {
+    background: var(--bg-darker);
+    color: var(--text-main);
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    text-align: center;
+    border-bottom: 2px solid var(--border);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    /* Shadow for depth */
+}
+
+/* Data Cells */
+td {
+    color: var(--text-secondary);
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* Sticky First Column (Positions) */
+.sticky-col {
+    position: sticky;
+    left: 0;
+    background: var(--bg-dark);
+    /* Slightly lighter/different to distinguish */
+    z-index: 20;
+    border-right: 2px solid var(--border);
+    font-weight: 700;
+    color: var(--accent);
+    text-align: left;
+    /* Keep labels left aligned */
+}
+
+/* Top-Left Corner (Intersection) */
+th.sticky-col {
+    z-index: 30 !important;
+    background: var(--bg-dark);
+    color: var(--accent);
+    border-bottom: 2px solid var(--border);
+    border-right: 2px solid var(--border);
+}
+
+/* Zebra Striping */
+tbody tr:nth-child(even) td:not(.sticky-col) {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+tbody tr:hover td {
+    background: var(--bg-card-hover);
+}
+
+/* Hover effect for position labels */
+tbody tr:hover .sticky-col {
+    background: var(--bg-card-hover);
+}
+
+/* Scrollbar styles */
+.table-container::-webkit-scrollbar {
+    height: 10px;
+    width: 10px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: var(--bg-darker);
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 5px;
+    border: 2px solid var(--bg-darker);
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: var(--text-muted);
+}
+
+/* ============================================
    Modal - Glassmorphism
    ============================================ */
 .modal {

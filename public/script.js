@@ -603,17 +603,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         card.className = 'history-item';
                         card.style.animationDelay = `${index * 50}ms`;
 
-                        const fourth = lineup['4'] ? lineup['4'].player : '???';
-                        const sp = lineup['SP'] ? lineup['SP'].player : '???';
+                        // Find key players (4th batter and SP)
+                        const cleanLineup = lineup[4] ? lineup[4].player : '未定';
+                        const sp = lineup['SP'] ? lineup['SP'].player : '未定';
 
                         card.innerHTML = `
-                            <h3>${item.name} 的陣容</h3>
+                            <h3>${item.name}</h3>
                             <p style="color: var(--text-muted); font-size: 0.8rem;">${new Date(item.created_at).toLocaleString('zh-TW')}</p>
                             <p>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
                                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
                                 </svg>
-                                第四棒: <span style="color: var(--accent); font-weight: 600;">${fourth}</span>
+                                第四棒: <span style="color: var(--accent); font-weight: 600;">${cleanLineup}</span>
                             </p>
                             <p>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--info)" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
@@ -641,6 +642,96 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         historyContainer.appendChild(card);
                     });
+
+
+                    // Populate Comparison Table (Transposed)
+                    const tableHead = document.querySelector('#lineupTable thead');
+                    const tableBody = document.querySelector('#lineupTable tbody');
+
+                    if (tableHead && tableBody && res.data.length > 0) {
+                        tableHead.innerHTML = '';
+                        tableBody.innerHTML = '';
+
+                        // 1. Build Header Row: [位置, Coach A, Coach B, ...]
+                        const headerTr = document.createElement('tr');
+
+                        // First col: Position Label
+                        const thPos = document.createElement('th');
+                        thPos.className = 'sticky-col';
+                        thPos.textContent = '守備/棒次';
+                        headerTr.appendChild(thPos);
+
+                        // Coach columns
+                        res.data.forEach(item => {
+                            const th = document.createElement('th');
+                            // Fix: Use item.name instead of item.coach_name
+                            th.innerHTML = `
+                                <div>${item.name}</div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal; margin-top: 4px;">
+                                    ${new Date(item.created_at).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' })}
+                                </div>
+                            `;
+                            headerTr.appendChild(th);
+                        });
+                        tableHead.appendChild(headerTr);
+
+                        // 2. Build Data Rows (Positions)
+                        const positions = [
+                            { id: 1, label: '第一棒' },
+                            { id: 2, label: '第二棒' },
+                            { id: 3, label: '第三棒' },
+                            { id: 4, label: '第四棒' },
+                            { id: 5, label: '第五棒' },
+                            { id: 6, label: '第六棒' },
+                            { id: 7, label: '第七棒' },
+                            { id: 8, label: '第八棒' },
+                            { id: 9, label: '第九棒' },
+                            { id: 'SP', label: '先發投手' },
+                            { id: 'RP', label: '中繼投手' },
+                            { id: 'CP', label: '救援投手' }
+                        ];
+
+                        positions.forEach(pos => {
+                            const tr = document.createElement('tr');
+
+                            // Sticky Position Label Column
+                            const tdLabel = document.createElement('td');
+                            tdLabel.className = 'sticky-col';
+                            tdLabel.textContent = pos.label;
+                            tdLabel.style.fontWeight = '600';
+                            tdLabel.style.color = 'var(--text-main)';
+                            tr.appendChild(tdLabel);
+
+                            // Data for each coach
+                            res.data.forEach(item => {
+                                let lineup;
+                                try {
+                                    lineup = JSON.parse(item.lineup);
+                                } catch (e) { lineup = {}; }
+
+                                const td = document.createElement('td');
+                                const data = lineup[pos.id];
+
+                                if (data && data.player) {
+                                    if (['SP', 'RP', 'CP'].includes(pos.id)) {
+                                        td.innerHTML = `<span style="font-weight:500; color: var(--info);">${data.player}</span>`;
+                                    } else {
+                                        td.innerHTML = `
+                                            <div style="font-weight:500;">${data.player}</div>
+                                            <div style="font-size: 0.75rem; color: var(--accent); font-family: monospace;">${data.pos}</div>
+                                        `;
+                                    }
+                                } else {
+                                    td.textContent = '-';
+                                    td.style.color = 'var(--border)';
+                                }
+                                tr.appendChild(td);
+                            });
+                            tableBody.appendChild(tr);
+                        });
+                    }
+
+
                 } else {
                     historyContainer.innerHTML = `
                         <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
