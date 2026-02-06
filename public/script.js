@@ -730,18 +730,40 @@ document.addEventListener('DOMContentLoaded', () => {
         miniField.innerHTML = generateMiniFieldHTML(lineup);
         fieldSection.appendChild(miniField);
 
-        // Add share button
-        const shareBtn = document.createElement('button');
-        shareBtn.className = 'share-btn';
-        shareBtn.innerHTML = `
+        // Add share buttons container
+        const btnContainer = document.createElement('div');
+        btnContainer.style.cssText = 'display: flex; gap: 12px; margin-top: 12px;';
+
+        // Button 1: Copy Field Image
+        const shareFieldBtn = document.createElement('button');
+        shareFieldBtn.className = 'share-btn';
+        shareFieldBtn.innerHTML = `
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
-            複製圖片
+            複製守備圖
         `;
-        shareBtn.addEventListener('click', () => copyFieldAsImage(name, lineup));
-        fieldSection.appendChild(shareBtn);
+        shareFieldBtn.addEventListener('click', () => copyFieldAsImage(name, lineup));
+
+        // Button 2: Copy List Image
+        const shareListBtn = document.createElement('button');
+        shareListBtn.className = 'share-btn';
+        shareListBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            複製打序表
+        `;
+        shareListBtn.addEventListener('click', () => copyLineupAsTextListImage(name, lineup));
+
+        btnContainer.appendChild(shareFieldBtn);
+        btnContainer.appendChild(shareListBtn);
+        fieldSection.appendChild(btnContainer);
 
         container.appendChild(fieldSection);
         modalBody.appendChild(container);
@@ -859,25 +881,114 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Footer
-        ctx.fillStyle = '#6B7280';
-        ctx.font = '10px "Noto Sans TC", sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('中華隊先發陣容預測', width / 2, height - 15);
+        // Convert to blob and copy
+        canvas.toBlob(blob => {
+            const item = new ClipboardItem({ 'image/png': blob });
+            navigator.clipboard.write([item]).then(() => {
+                showToast('守備圖已複製到剪貼簿！', 'success');
+            }).catch(() => {
+                showToast('複製失敗，請手動截圖', 'error');
+            });
+        });
+    }
 
-        // Copy to clipboard
-        try {
-            canvas.toBlob(async (blob) => {
-                if (blob) {
-                    const item = new ClipboardItem({ 'image/png': blob });
-                    await navigator.clipboard.write([item]);
-                    showToast('已複製圖片到剪貼簿！', 'success');
-                }
-            }, 'image/png');
-        } catch (err) {
-            console.error('Failed to copy image:', err);
-            showToast('複製失敗，請重試', 'error');
+    // New Function: Copy Lineup Text List as Image
+    async function copyLineupAsTextListImage(coachName, lineup) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Canvas dimensions
+        const width = 450;
+        const height = 650; // Taller for list
+        canvas.width = width;
+        canvas.height = height;
+
+        // Background
+        ctx.fillStyle = '#0A0E27';
+        ctx.fillRect(0, 0, width, height);
+
+        // Header Background
+        ctx.fillStyle = '#1a1f3d';
+        ctx.fillRect(0, 0, width, 70);
+
+        // Title text
+        ctx.fillStyle = '#FBBF24';
+        ctx.font = 'bold 24px "Noto Sans TC", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${coachName} 鍵盤教練`, width / 2, 35);
+
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '16px "Noto Sans TC", sans-serif';
+        ctx.fillText('台灣隊先發打序預測', width / 2, 60);
+
+        // Content settings
+        const startY = 110;
+        const lineHeight = 38;
+        let currentY = startY;
+
+        ctx.textAlign = 'left';
+
+        // Helper to draw row
+        function drawRow(label, player, pos, isPitcher = false) {
+            // Order/Role label
+            ctx.fillStyle = isPitcher ? '#38bdf8' : '#94a3b8'; // Blue for pitchers, gray for batters
+            ctx.font = 'bold 18px "Fira Code", monospace';
+            ctx.fillText(label, 40, currentY);
+
+            // Player Name
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px "Noto Sans TC", sans-serif';
+            ctx.fillText(player || '-', 100, currentY);
+
+            // Position
+            if (pos) {
+                ctx.fillStyle = '#f472b6'; // Pink/Accent
+                ctx.font = 'bold 18px "Fira Code", monospace';
+                ctx.textAlign = 'right';
+                ctx.fillText(pos, width - 40, currentY);
+                ctx.textAlign = 'left';
+            }
+
+            // Divider line
+            ctx.beginPath();
+            ctx.strokeStyle = '#1e293b';
+            ctx.moveTo(40, currentY + 12);
+            ctx.lineTo(width - 40, currentY + 12);
+            ctx.stroke();
+
+            currentY += lineHeight;
         }
+
+        // Draw Batters 1-9
+        for (let i = 1; i <= 9; i++) {
+            const data = lineup[i];
+            drawRow(`#${i}`, data.player, data.pos);
+        }
+
+        currentY += 10; // Extra spacer
+
+        // Draw Pitchers
+        ['SP', 'RP', 'CP'].forEach(role => {
+            const data = lineup[role];
+            drawRow(role, data.player, null, true);
+        });
+
+        // Current Time Footer
+        currentY += 20;
+        ctx.fillStyle = '#475569';
+        ctx.font = '12px "Noto Sans TC", sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Generated at ${new Date().toLocaleString('zh-TW')}`, width / 2, height - 15);
+
+        // Convert to blob and copy
+        canvas.toBlob(blob => {
+            const item = new ClipboardItem({ 'image/png': blob });
+            navigator.clipboard.write([item]).then(() => {
+                showToast('打序表已複製到剪貼簿！', 'success');
+            }).catch(() => {
+                showToast('複製失敗，請手動截圖', 'error');
+            });
+        });
     }
 
     // Helper function to generate mini field HTML
