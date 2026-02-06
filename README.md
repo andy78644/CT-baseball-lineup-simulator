@@ -1,6 +1,6 @@
-# 中華隊先發陣容預測 🇹🇼⚾
+# 台灣隊先發陣容預測 🇹🇼⚾
 
-Taiwan Baseball Dream Team Lineup Selector - 讓鍵盤教練們預測並分享中華隊的先發陣容！
+Taiwan Baseball Dream Team Lineup Selector - 讓鍵盤教練們預測並分享台灣隊的先發陣容！
 
 ![Taiwan Baseball](https://img.shields.io/badge/Baseball-Taiwan-red?style=for-the-badge)
 ![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge)

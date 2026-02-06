@@ -1,5 +1,5 @@
 /**
- * 中華隊先發陣容預測 - Taiwan Baseball Lineup Selector
+ * 台灣隊先發陣容預測 - Taiwan Baseball Lineup Selector
  * UI/UX Pro Max Enhanced Version
  */
 
