@@ -476,6 +476,67 @@ document.addEventListener('DOMContentLoaded', () => {
     submitBtn.addEventListener('click', handleSubmit);
 
     // ============================================
+    // Clear All Button Handler
+    // ============================================
+    const clearAllBtn = document.getElementById('clearAllBtn');
+    if (clearAllBtn) {
+        clearAllBtn.addEventListener('click', () => {
+            // Reset state
+            for (let i = 1; i <= 9; i++) {
+                state.lineup[i] = { player: null, pos: null };
+            }
+            PITCHER_SLOTS.forEach(slot => {
+                state.lineup[slot] = { player: null, pos: slot.startsWith('SP') ? 'SP' : slot };
+            });
+
+            // Reset UI - batting slots (1-9)
+            for (let i = 1; i <= 9; i++) {
+                const slotEl = document.querySelector(`.order-slot[data-slot="${i}"]`);
+                if (!slotEl) continue;
+
+                const placeholder = slotEl.querySelector('.placeholder');
+                const playerInfo = slotEl.querySelector('.player-info');
+                const clearBtn = slotEl.querySelector('.clear-btn');
+
+                if (placeholder) placeholder.hidden = false;
+                if (playerInfo) {
+                    playerInfo.hidden = true;
+                    playerInfo.querySelector('.player-name').textContent = '';
+                    const select = playerInfo.querySelector('.pos-select');
+                    if (select) select.value = '';
+                }
+                if (clearBtn) clearBtn.hidden = true;
+            }
+
+            // Reset UI - pitcher slots
+            PITCHER_SLOTS.forEach(slot => {
+                const slotEl = document.querySelector(`.order-slot[data-slot="${slot}"]`);
+                if (!slotEl) return;
+
+                const placeholder = slotEl.querySelector('.placeholder');
+                const contentDiv = slotEl.querySelector('.slot-content');
+                const clearBtn = slotEl.querySelector('.clear-btn');
+
+                if (placeholder) placeholder.hidden = false;
+
+                // Remove player name if exists
+                const existingName = contentDiv.querySelector('.player-name');
+                if (existingName) existingName.remove();
+
+                if (clearBtn) clearBtn.hidden = true;
+            });
+
+            // Reset field view
+            updateFieldView();
+
+            // Refresh all dropdowns
+            refreshAllDropdowns();
+
+            showToast('已清空所有選擇', 'info');
+        });
+    }
+
+    // ============================================
     // Search Handler
     // ============================================
     const searchBtn = document.getElementById('searchBtn');
@@ -758,7 +819,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const sp = lineup['SP'] ? lineup['SP'].player : '未定';
 
                         card.innerHTML = `
-        < h3 > ${item.name}</h3 >
+                            <h3>${item.name}</h3>
                             <p style="color: var(--text-muted); font-size: 0.8rem;">${new Date(item.created_at).toLocaleString('zh-TW')}</p>
                             <p>
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" style="vertical-align: middle; margin-right: 4px;">
@@ -814,12 +875,11 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Coach columns
                         res.data.forEach(item => {
                             const th = document.createElement('th');
-                            // Fix: Use item.name instead of item.coach_name
                             th.innerHTML = `
-            < div > ${item.name}</div >
-        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal; margin-top: 4px;">
-            ${new Date(item.created_at).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' })}
-        </div>
+                                <div>${item.name}</div>
+                                <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: normal; margin-top: 4px;">
+                                    ${new Date(item.created_at).toLocaleDateString('zh-TW', { month: 'numeric', day: 'numeric' })}
+                                </div>
                             `;
                             headerTr.appendChild(th);
                         });
@@ -836,7 +896,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             { id: 7, label: '第七棒' },
                             { id: 8, label: '第八棒' },
                             { id: 9, label: '第九棒' },
-                            { id: 9, label: '第九棒' },
+                            // Duplicate 9th removed
                             { id: 'SP_KR', label: '先發(韓)' },
                             { id: 'SP_JP', label: '先發(日)' },
                             { id: 'SP_AU', label: '先發(澳)' },
@@ -867,12 +927,12 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const data = lineup[pos.id];
 
                                 if (data && data.player) {
-                                    if (['SP', 'RP', 'CP'].includes(pos.id)) {
-                                        td.innerHTML = `< span style = "font-weight:500; color: var(--info);" > ${data.player}</span > `;
+                                    if (['SP_KR', 'SP_JP', 'SP_AU', 'SP_CZ', 'RP', 'CP'].includes(pos.id)) {
+                                        td.innerHTML = `<span style="font-weight:500; color: var(--info);">${data.player}</span>`;
                                     } else {
                                         td.innerHTML = `
-        < div style = "font-weight:500;" > ${data.player}</div >
-        <div style="font-size: 0.75rem; color: var(--accent); font-family: monospace;">${data.pos}</div>
+                                            <div style="font-weight:500;">${data.player}</div>
+                                            <div style="font-size: 0.75rem; color: var(--accent); font-family: monospace;">${data.pos}</div>
                                         `;
                                     }
                                 } else {
@@ -888,7 +948,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 } else {
                     historyContainer.innerHTML = `
-            < div style = "grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);" >
+                        <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
                             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom: 12px; opacity: 0.5;">
                                 <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                                 <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -897,8 +957,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             </svg>
                             <p>尚無其他鍵盤教練的陣容</p>
                             <p style="font-size: 0.9rem;">成為第一個提交陣容的鍵盤教練吧！</p>
-                        </div >
-            `;
+                        </div>
+                    `;
                 }
             })
             .catch(err => {
@@ -928,7 +988,7 @@ document.addEventListener('DOMContentLoaded', () => {
             row.className = 'modal-detail-row';
             const p = lineup[i];
             row.innerHTML = `
-        < span style = "color: var(--text-muted); font-family: 'Fira Code', monospace; font-weight: 600;" > #${i}</span >
+                <span style="color: var(--text-muted); font-family: 'Fira Code', monospace; font-weight: 600;">#${i}</span>
                 <span style="font-weight: 500;">${p.player || '-'}</span>
                 <span style="color: var(--accent); font-family: 'Fira Code', monospace; font-weight: 600;">${p.pos || '-'}</span>
             `;
@@ -952,7 +1012,7 @@ document.addEventListener('DOMContentLoaded', () => {
             row.className = 'modal-detail-row';
             const p = lineup[role];
             row.innerHTML = `
-            < span style = "color: var(--info); font-family: 'Fira Code', monospace; font-weight: 600;" > ${role}</span >
+                <span style="color: var(--info); font-family: 'Fira Code', monospace; font-weight: 600;">${role}</span>
                 <span style="font-weight: 500;">${p.player || '-'}</span>
                 <span></span>
             `;
@@ -983,27 +1043,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const shareFieldBtn = document.createElement('button');
         shareFieldBtn.className = 'share-btn';
         shareFieldBtn.innerHTML = `
-            < svg width = "16" height = "16" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2" >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                 <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-            </svg >
+            </svg>
             複製守備圖
-                `;
+        `;
         shareFieldBtn.addEventListener('click', () => copyFieldAsImage(name, lineup));
 
         // Button 2: Copy List Image
         const shareListBtn = document.createElement('button');
         shareListBtn.className = 'share-btn';
         shareListBtn.innerHTML = `
-            < svg width = "16" height = "16" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2" >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
                 <line x1="16" y1="13" x2="8" y2="13"></line>
                 <line x1="16" y1="17" x2="8" y2="17"></line>
                 <polyline points="10 9 9 9 8 9"></polyline>
-            </svg >
+            </svg>
             複製打序表
-                `;
+        `;
         shareListBtn.addEventListener('click', () => copyLineupAsTextListImage(name, lineup));
 
         btnContainer.appendChild(shareFieldBtn);
@@ -1262,11 +1322,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const playerName = data ? data.player : '';
 
             html += `
-        < div class= "mini-field-pos mini-p-${pos.toLowerCase()} ${isFilled ? 'filled' : ''}" >
-        <span>${battingLabel}${pos}</span>
+                <div class="mini-field-pos mini-p-${pos.toLowerCase()} ${isFilled ? 'filled' : ''}">
+                    <span>${battingLabel}${pos}</span>
                     ${isFilled ? `<strong>${playerName}</strong>` : ''}
-                </div >
-        `;
+                </div>
+            `;
         });
 
         html += '</div>';

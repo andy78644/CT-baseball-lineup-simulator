@@ -790,6 +790,42 @@ h3 {
     left: 22%;
 }
 
+.danger-btn {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--error);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    padding: 12px 24px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.danger-btn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: var(--error);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.danger-btn:active {
+    transform: translateY(0);
+}
+
+.danger-btn svg {
+    transition: transform 0.3s ease;
+}
+
+.danger-btn:hover svg {
+    transform: rotate(90deg);
+}
+
 /* ============================================
    History Section
    ============================================ */
