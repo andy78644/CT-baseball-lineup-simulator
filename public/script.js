@@ -471,7 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const email = document.getElementById('coachEmail').value.trim();
 
         if (!name || !email) {
-            showToast('請輸入教練姓名和 Email', 'error');
+            showToast('請輸入鍵盤教練姓名和 Email', 'error');
             return;
         }
 
@@ -652,8 +652,8 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <line x1="8" y1="2" x2="8" y2="6"></line>
                                 <line x1="3" y1="10" x2="21" y2="10"></line>
                             </svg>
-                            <p>尚無其他教練的陣容</p>
-                            <p style="font-size: 0.9rem;">成為第一個提交陣容的教練吧！</p>
+                            <p>尚無其他鍵盤教練的陣容</p>
+                            <p style="font-size: 0.9rem;">成為第一個提交陣容的鍵盤教練吧！</p>
                         </div>
                     `;
                 }
@@ -788,7 +788,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillStyle = '#FBBF24';
         ctx.font = 'bold 20px "Noto Sans TC", sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText(`${coachName} 教練`, width / 2, 38);
+        ctx.fillText(`${coachName} 鍵盤教練`, width / 2, 38);
 
         // Draw field background
         const fieldY = 70;

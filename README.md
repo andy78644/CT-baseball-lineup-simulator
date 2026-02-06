@@ -1,6 +1,6 @@
 # 中華隊先發陣容預測 🇹🇼⚾
 
-Taiwan Baseball Dream Team Lineup Selector - 讓教練們預測並分享中華隊的先發陣容！
+Taiwan Baseball Dream Team Lineup Selector - 讓鍵盤教練們預測並分享中華隊的先發陣容！
 
 ![Taiwan Baseball](https://img.shields.io/badge/Baseball-Taiwan-red?style=for-the-badge)
 ![Node.js](https://img.shields.io/badge/Node.js-18+-green?style=for-the-badge)
@@ -11,7 +11,7 @@ Taiwan Baseball Dream Team Lineup Selector - 讓教練們預測並分享中華�
 - 🎯 **拖拉式打序安排** - 輕鬆選擇 1-9 棒打者與守備位置
 - ⚾ **投手調度** - 設定先發投手 (SP)、中繼 (RP)、終結者 (CP)
 - 📊 **視覺化守備位置圖** - 即時顯示球員在場上的位置配置
-- 👥 **教練名單分享** - 查看其他教練提交的陣容
+- 👥 **鍵盤教練名單分享** - 查看其他鍵盤教練提交的陣容
 - 📋 **一鍵複製分享** - 將守備位置圖複製為圖片分享
 
 ## 🚀 快速開始
@@ -155,7 +155,7 @@ git push -u origin main
 
 ```json
 {
-  "name": "教練名稱",
+  "name": "鍵盤教練名稱",
   "email": "email@example.com",
   "lineup": {
     "1": { "player": "陳傑憲", "pos": "CF" },
