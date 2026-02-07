@@ -1065,11 +1065,11 @@ document.addEventListener('DOMContentLoaded', () => {
         saveFieldBtn.className = 'share-btn';
         saveFieldBtn.innerHTML = `
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                <polyline points="16 6 12 2 8 6"></polyline>
+                <line x1="12" y1="2" x2="12" y2="15"></line>
             </svg>
-            儲存守備圖
+            儲存/分享守備圖
         `;
         saveFieldBtn.addEventListener('click', () => saveFieldAsImage(name, lineup));
 
@@ -1093,11 +1093,11 @@ document.addEventListener('DOMContentLoaded', () => {
         saveListBtn.className = 'share-btn';
         saveListBtn.innerHTML = `
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                <polyline points="7 10 12 15 17 10"></polyline>
-                <line x1="12" y1="15" x2="12" y2="3"></line>
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                <polyline points="16 6 12 2 8 6"></polyline>
+                <line x1="12" y1="2" x2="12" y2="15"></line>
             </svg>
-            儲存打序表
+            儲存/分享打序表
         `;
         saveListBtn.addEventListener('click', () => saveLineupAsTextListImage(name, lineup));
 
@@ -1240,15 +1240,44 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Save field diagram as image file
+    // Save canvas as image - uses Web Share API on mobile for direct photo album saving,
+    // falls back to <a download> on desktop
+    async function saveCanvasAsImage(canvas, fileName, label) {
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+        const file = new File([blob], fileName, { type: 'image/png' });
+
+        // Use Web Share API if available (mobile devices) - allows saving to Photos/Gallery
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            try {
+                await navigator.share({
+                    files: [file],
+                    title: fileName
+                });
+                showToast(`${label}已分享！`, 'success');
+                return;
+            } catch (err) {
+                // User cancelled share - not an error
+                if (err.name === 'AbortError') return;
+                // Other share errors - fall through to download
+            }
+        }
+
+        // Fallback: standard file download (desktop browsers)
+        const link = document.createElement('a');
+        link.download = fileName;
+        const objectUrl = URL.createObjectURL(blob);
+        link.href = objectUrl;
+        link.click();
+        setTimeout(() => URL.revokeObjectURL(objectUrl), 60000);
+        showToast(`${label}已儲存！`, 'success');
+    }
+
+    // Save/share field diagram as image file
     async function saveFieldAsImage(coachName, lineup) {
         try {
             const canvas = await generateFieldCanvas(coachName, lineup);
-            const link = document.createElement('a');
-            link.download = `${coachName}_守備圖.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            showToast('守備圖已儲存！', 'success');
+            const fileName = `${coachName}_守備圖.png`;
+            await saveCanvasAsImage(canvas, fileName, '守備圖');
         } catch {
             showToast('儲存失敗，請重試', 'error');
         }
@@ -1360,15 +1389,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // Save lineup text list as image file
+    // Save/share lineup text list as image file
     async function saveLineupAsTextListImage(coachName, lineup) {
         try {
             const canvas = await generateLineupCanvas(coachName, lineup);
-            const link = document.createElement('a');
-            link.download = `${coachName}_打序表.png`;
-            link.href = canvas.toDataURL('image/png');
-            link.click();
-            showToast('打序表已儲存！', 'success');
+            const fileName = `${coachName}_打序表.png`;
+            await saveCanvasAsImage(canvas, fileName, '打序表');
         } catch {
             showToast('儲存失敗，請重試', 'error');
         }
