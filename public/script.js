@@ -1197,12 +1197,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Convert to blob and copy
         try {
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
             const item = new ClipboardItem({
-                'image/png': new Promise(resolve => canvas.toBlob(resolve))
+                'image/png': blob
             });
             await navigator.clipboard.write([item]);
             showToast('守備圖已複製到剪貼簿！', 'success');
-        } catch {
+        } catch (err) {
+            console.error('Copy failed:', err);
             showToast('複製失敗，請手動截圖', 'error');
         }
     }
@@ -1298,12 +1300,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Convert to blob and copy
         try {
+            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
             const item = new ClipboardItem({
-                'image/png': new Promise(resolve => canvas.toBlob(resolve))
+                'image/png': blob
             });
             await navigator.clipboard.write([item]);
             showToast('打序表已複製到剪貼簿！', 'success');
-        } catch {
+        } catch (err) {
+            console.error('Copy failed:', err);
             showToast('複製失敗，請手動截圖', 'error');
         }
     }
