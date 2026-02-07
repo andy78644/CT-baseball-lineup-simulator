@@ -1093,10 +1093,12 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check if ClipboardItem and clipboard.write are available
         if (typeof ClipboardItem !== 'undefined' && navigator.clipboard && navigator.clipboard.write) {
             try {
-                const blob = await new Promise((resolve, reject) => {
+                // Safari requires a Promise<Blob> (not a resolved Blob) inside ClipboardItem,
+                // and clipboard.write() must be called synchronously within the user gesture.
+                const blobPromise = new Promise((resolve, reject) => {
                     canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png');
                 });
-                const item = new ClipboardItem({ 'image/png': blob });
+                const item = new ClipboardItem({ 'image/png': blobPromise });
                 await navigator.clipboard.write([item]);
                 showToast(successMsg, 'success');
                 return;
