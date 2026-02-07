@@ -1090,13 +1090,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Copy field diagram as image to clipboard
     async function copyFieldAsImage(coachName, lineup) {
-        // Check if clipboard API is supported
-        if (!navigator.clipboard || !navigator.clipboard.write) {
-            showToast('您的瀏覽器不支援此功能', 'error');
-            console.error('Clipboard API not supported');
-            return;
-        }
-
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
@@ -1220,24 +1213,12 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('守備圖已複製到剪貼簿！', 'success');
         } catch (err) {
             console.error('Copy failed:', err);
-            // More helpful error message
-            if (err.name === 'NotAllowedError') {
-                showToast('需要允許剪貼簿權限才能複製', 'error');
-            } else {
-                showToast('複製失敗，請使用截圖或在電腦瀏覽器開啟', 'error');
-            }
+            showToast('複製失敗，請手動截圖', 'error');
         }
     }
 
     // New Function: Copy Lineup Text List as Image
     async function copyLineupAsTextListImage(coachName, lineup) {
-        // Check if clipboard API is supported
-        if (!navigator.clipboard || !navigator.clipboard.write) {
-            showToast('您的瀏覽器不支援此功能', 'error');
-            console.error('Clipboard API not supported');
-            return;
-        }
-
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
@@ -1343,12 +1324,7 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('打序表已複製到剪貼簿！', 'success');
         } catch (err) {
             console.error('Copy failed:', err);
-            // More helpful error message
-            if (err.name === 'NotAllowedError') {
-                showToast('需要允許剪貼簿權限才能複製', 'error');
-            } else {
-                showToast('複製失敗，請使用截圖或在電腦瀏覽器開啟', 'error');
-            }
+            showToast('複製失敗，請手動截圖', 'error');
         }
     }
 
