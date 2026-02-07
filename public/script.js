@@ -1088,6 +1088,31 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal.focus();
     }
 
+    // Helper: try clipboard write, fall back to download
+    async function copyCanvasToClipboardOrDownload(canvas, successMsg, filename) {
+        // Check if ClipboardItem and clipboard.write are available
+        if (typeof ClipboardItem !== 'undefined' && navigator.clipboard && navigator.clipboard.write) {
+            try {
+                const blob = await new Promise((resolve, reject) => {
+                    canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png');
+                });
+                const item = new ClipboardItem({ 'image/png': blob });
+                await navigator.clipboard.write([item]);
+                showToast(successMsg, 'success');
+                return;
+            } catch (err) {
+                console.warn('Clipboard write failed:', err);
+                // Fall through to download
+            }
+        }
+        // Fallback: download the image
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('此瀏覽器不支援複製圖片，已改為下載', 'info');
+    }
+
     // Copy field diagram as image to clipboard
     async function copyFieldAsImage(coachName, lineup) {
         const canvas = document.createElement('canvas');
@@ -1195,16 +1220,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Convert to blob and copy
-        try {
-            const item = new ClipboardItem({
-                'image/png': new Promise(resolve => canvas.toBlob(resolve))
-            });
-            await navigator.clipboard.write([item]);
-            showToast('守備圖已複製到剪貼簿！', 'success');
-        } catch {
-            showToast('複製失敗，請手動截圖', 'error');
-        }
+        // Convert to blob and copy (with fallback)
+        await copyCanvasToClipboardOrDownload(canvas, '守備圖已複製到剪貼簿！', '守備圖.png');
     }
 
     // New Function: Copy Lineup Text List as Image
@@ -1296,16 +1313,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.textAlign = 'center';
         ctx.fillText(`Generated at ${new Date().toLocaleString('zh-TW')}`, width / 2, height - 15);
 
-        // Convert to blob and copy
-        try {
-            const item = new ClipboardItem({
-                'image/png': new Promise(resolve => canvas.toBlob(resolve))
-            });
-            await navigator.clipboard.write([item]);
-            showToast('打序表已複製到剪貼簿！', 'success');
-        } catch {
-            showToast('複製失敗，請手動截圖', 'error');
-        }
+        // Convert to blob and copy (with fallback)
+        await copyCanvasToClipboardOrDownload(canvas, '打序表已複製到剪貼簿！', '打序表.png');
     }
 
     // Helper function to generate mini field HTML
