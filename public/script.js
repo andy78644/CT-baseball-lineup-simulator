@@ -1046,7 +1046,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add share buttons container
         const btnContainer = document.createElement('div');
-        btnContainer.style.cssText = 'display: flex; gap: 12px; margin-top: 12px;';
+        btnContainer.style.cssText = 'display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap;';
 
         // Button 1: Copy Field Image
         const shareFieldBtn = document.createElement('button');
@@ -1060,7 +1060,20 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         shareFieldBtn.addEventListener('click', () => copyFieldAsImage(name, lineup));
 
-        // Button 2: Copy List Image
+        // Button 2: Save Field Image
+        const saveFieldBtn = document.createElement('button');
+        saveFieldBtn.className = 'share-btn';
+        saveFieldBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            儲存守備圖
+        `;
+        saveFieldBtn.addEventListener('click', () => saveFieldAsImage(name, lineup));
+
+        // Button 3: Copy List Image
         const shareListBtn = document.createElement('button');
         shareListBtn.className = 'share-btn';
         shareListBtn.innerHTML = `
@@ -1075,8 +1088,23 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         shareListBtn.addEventListener('click', () => copyLineupAsTextListImage(name, lineup));
 
+        // Button 4: Save List Image
+        const saveListBtn = document.createElement('button');
+        saveListBtn.className = 'share-btn';
+        saveListBtn.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="7 10 12 15 17 10"></polyline>
+                <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            儲存打序表
+        `;
+        saveListBtn.addEventListener('click', () => saveLineupAsTextListImage(name, lineup));
+
         btnContainer.appendChild(shareFieldBtn);
+        btnContainer.appendChild(saveFieldBtn);
         btnContainer.appendChild(shareListBtn);
+        btnContainer.appendChild(saveListBtn);
         fieldSection.appendChild(btnContainer);
 
         container.appendChild(fieldSection);
@@ -1088,8 +1116,8 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal.focus();
     }
 
-    // Copy field diagram as image to clipboard
-    async function copyFieldAsImage(coachName, lineup) {
+    // Generate field diagram canvas
+    async function generateFieldCanvas(coachName, lineup) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
@@ -1195,8 +1223,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Convert to blob and copy
+        return canvas;
+    }
+
+    // Copy field diagram as image to clipboard
+    async function copyFieldAsImage(coachName, lineup) {
         try {
+            const canvas = await generateFieldCanvas(coachName, lineup);
             const item = new ClipboardItem({
                 'image/png': new Promise(resolve => canvas.toBlob(resolve))
             });
@@ -1207,8 +1240,22 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // New Function: Copy Lineup Text List as Image
-    async function copyLineupAsTextListImage(coachName, lineup) {
+    // Save field diagram as image file
+    async function saveFieldAsImage(coachName, lineup) {
+        try {
+            const canvas = await generateFieldCanvas(coachName, lineup);
+            const link = document.createElement('a');
+            link.download = `${coachName}_守備圖.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast('守備圖已儲存！', 'success');
+        } catch {
+            showToast('儲存失敗，請重試', 'error');
+        }
+    }
+
+    // Generate lineup text list canvas
+    async function generateLineupCanvas(coachName, lineup) {
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
 
@@ -1296,8 +1343,13 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.textAlign = 'center';
         ctx.fillText(`Generated at ${new Date().toLocaleString('zh-TW')}`, width / 2, height - 15);
 
-        // Convert to blob and copy
+        return canvas;
+    }
+
+    // Copy lineup text list as image to clipboard
+    async function copyLineupAsTextListImage(coachName, lineup) {
         try {
+            const canvas = await generateLineupCanvas(coachName, lineup);
             const item = new ClipboardItem({
                 'image/png': new Promise(resolve => canvas.toBlob(resolve))
             });
@@ -1305,6 +1357,20 @@ document.addEventListener('DOMContentLoaded', () => {
             showToast('打序表已複製到剪貼簿！', 'success');
         } catch {
             showToast('複製失敗，請手動截圖', 'error');
+        }
+    }
+
+    // Save lineup text list as image file
+    async function saveLineupAsTextListImage(coachName, lineup) {
+        try {
+            const canvas = await generateLineupCanvas(coachName, lineup);
+            const link = document.createElement('a');
+            link.download = `${coachName}_打序表.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            showToast('打序表已儲存！', 'success');
+        } catch {
+            showToast('儲存失敗，請重試', 'error');
         }
     }
 
@@ -1349,6 +1415,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // ============================================
     const mainShareFieldBtn = document.getElementById('mainShareFieldBtn');
     const mainShareListBtn = document.getElementById('mainShareListBtn');
+    const mainSaveFieldBtn = document.getElementById('mainSaveFieldBtn');
+    const mainSaveListBtn = document.getElementById('mainSaveListBtn');
 
     if (mainShareFieldBtn) {
         mainShareFieldBtn.addEventListener('click', () => {
@@ -1362,6 +1430,20 @@ document.addEventListener('DOMContentLoaded', () => {
         mainShareListBtn.addEventListener('click', () => {
             const name = document.getElementById('coachName').value.trim() || '鍵盤教練';
             copyLineupAsTextListImage(name, state.lineup);
+        });
+    }
+
+    if (mainSaveFieldBtn) {
+        mainSaveFieldBtn.addEventListener('click', () => {
+            const name = document.getElementById('coachName').value.trim() || '鍵盤教練';
+            saveFieldAsImage(name, state.lineup);
+        });
+    }
+
+    if (mainSaveListBtn) {
+        mainSaveListBtn.addEventListener('click', () => {
+            const name = document.getElementById('coachName').value.trim() || '鍵盤教練';
+            saveLineupAsTextListImage(name, state.lineup);
         });
     }
 });

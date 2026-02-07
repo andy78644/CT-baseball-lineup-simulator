@@ -838,6 +838,7 @@ h3 {
     justify-content: flex-end;
     gap: 12px;
     margin-bottom: 12px;
+    flex-wrap: wrap;
 }
 
 #mainShareButtons .share-btn {
