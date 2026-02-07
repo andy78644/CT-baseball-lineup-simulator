@@ -1240,14 +1240,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Helper function to detect mobile devices
+    function isMobileDevice() {
+        // Check for touch capability and mobile user agent patterns
+        const hasTouchScreen = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        const mobileUserAgent = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        // Also check screen width as a secondary indicator
+        const isSmallScreen = window.innerWidth <= 768;
+
+        return hasTouchScreen && (mobileUserAgent || isSmallScreen);
+    }
+
     // Save canvas as image - uses Web Share API on mobile for direct photo album saving,
     // falls back to <a download> on desktop
     async function saveCanvasAsImage(canvas, fileName, label) {
         const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
         const file = new File([blob], fileName, { type: 'image/png' });
 
-        // Use Web Share API if available (mobile devices) - allows saving to Photos/Gallery
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        // Use Web Share API only on mobile devices - allows saving to Photos/Gallery
+        // Desktop browsers should always use direct download even if they support Web Share
+        if (isMobileDevice() && navigator.canShare && navigator.canShare({ files: [file] })) {
             try {
                 await navigator.share({
                     files: [file],
