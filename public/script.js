@@ -716,10 +716,10 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
         submitBtn.style.opacity = '0.7';
         submitBtn.innerHTML = `
-                        < svg width = "20" height = "20" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2.5" style = "vertical-align: middle; margin-right: 8px; animation: spin 1s linear infinite;" >
-                            <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"></circle>
-            </svg >
-                        提交中...
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 8px; animation: spin 1s linear infinite;">
+                <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"></circle>
+            </svg>
+            提交中...
         `;
 
         // Prepare Payload
@@ -765,11 +765,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // User might want to update again. Let's keep "Update" if it was update.
             // Or just generic "Submit/Update"
             submitBtn.innerHTML = `
-        < svg width = "20" height = "20" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2.5" style = "vertical-align: middle; margin-right: 8px;" >
-        <polyline points="20 6 9 17 4 12"></polyline>
-                </svg >
-            提交 / 更新陣容
-                `;
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 8px;">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                提交 / 更新陣容
+            `;
         }
     }
 
