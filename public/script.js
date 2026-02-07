@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Allowed positions mapping
     const allowedPositions = {
-        pitchers: [], // Pitchers restricted to SP/RP/CP slots only (handled by logic)
+        pitchers: [], // Pitchers restricted to SP slots only (handled by logic)
         catchers: ['C', 'DH', '1B'],
         infielders: ['1B', '2B', '3B', 'SS', 'DH'],
         outfielders: ['LF', 'CF', 'RF', 'DH']
@@ -46,12 +46,14 @@ document.addEventListener('DOMContentLoaded', () => {
             8: { player: null, pos: null },
             9: { player: null, pos: null },
             9: { player: null, pos: null },
-            SP_KR: { player: null, pos: 'SP' }, // Korea
-            SP_JP: { player: null, pos: 'SP' }, // Japan
-            SP_AU: { player: null, pos: 'SP' }, // Australia
-            SP_CZ: { player: null, pos: 'SP' }, // Czech
-            RP: { player: null, pos: 'RP' },
-            CP: { player: null, pos: 'CP' }
+            SP1_KR: { player: null, pos: 'SP' }, // Korea SP1
+            SP2_KR: { player: null, pos: 'SP' }, // Korea SP2
+            SP1_JP: { player: null, pos: 'SP' }, // Japan SP1
+            SP2_JP: { player: null, pos: 'SP' }, // Japan SP2
+            SP1_AU: { player: null, pos: 'SP' }, // Australia SP1
+            SP2_AU: { player: null, pos: 'SP' }, // Australia SP2
+            SP1_CZ: { player: null, pos: 'SP' }, // Czech SP1
+            SP2_CZ: { player: null, pos: 'SP' }  // Czech SP2
         },
         selectedSlot: null
     };
@@ -212,7 +214,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else if (isDisabledForSlot) {
                 div.classList.add('disabled');
                 div.setAttribute('aria-disabled', 'true');
-                div.title = isPitcher ? '投手只能選擇 先發/中繼/後援 位置' : '野手不能擔任投手';
+                div.title = isPitcher ? '投手只能選擇先發投手位置' : '野手不能擔任投手';
             }
 
             div.addEventListener('click', () => {
@@ -220,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     return;
                 }
                 if (div.classList.contains('disabled')) {
-                    showToast(isPitcher ? '投手只能選擇 先發/中繼/後援 位置' : '野手不能擔任投手', 'error');
+                    showToast(isPitcher ? '投手只能選擇先發投手位置' : '野手不能擔任投手', 'error');
                     return;
                 }
                 if (!state.selectedSlot) {
@@ -283,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Validation: Pitchers only in Pitcher slots
         if (category === 'pitchers' && !isPitcherSlot) {
-            showToast('投手只能選擇 先發/中繼/後援 位置', 'error');
+            showToast('投手只能選擇先發投手位置', 'error');
             return;
         }
         // Validation: Non-pitchers only in Batting slots
@@ -305,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const playerInfo = slotEl.querySelector('.player-info');
 
         // Batting Slots (1-9) have dropdowns
-        if (!['SP', 'RP', 'CP', 'SP_KR', 'SP_JP', 'SP_AU', 'SP_CZ'].includes(slotId)) {
+        if (!PITCHER_SLOTS.includes(slotId)) {
             placeholder.hidden = true;
             playerInfo.hidden = false;
 
@@ -401,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Pitcher Slots Helper
-    const PITCHER_SLOTS = ['SP_KR', 'SP_JP', 'SP_AU', 'SP_CZ', 'RP', 'CP'];
+    const PITCHER_SLOTS = ['SP1_KR', 'SP2_KR', 'SP1_JP', 'SP2_JP', 'SP1_AU', 'SP2_AU', 'SP1_CZ', 'SP2_CZ'];
 
     function clearSlot(slotId) {
         if (!state.lineup[slotId].player) return;
@@ -486,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 state.lineup[i] = { player: null, pos: null };
             }
             PITCHER_SLOTS.forEach(slot => {
-                state.lineup[slot] = { player: null, pos: slot.startsWith('SP') ? 'SP' : slot };
+                state.lineup[slot] = { player: null, pos: 'SP' };
             });
 
             // Reset UI - batting slots (1-9)
@@ -569,14 +571,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Load into state
                     // Load into state with backward compatibility
-                    // Ensure new slots (SP_KR, etc.) exist even if loading old data
+                    // Ensure new slots (SP1/SP2) exist even if loading old data
                     const defaultStructure = {
-                        SP_KR: { player: null, pos: 'SP' },
-                        SP_JP: { player: null, pos: 'SP' },
-                        SP_AU: { player: null, pos: 'SP' },
-                        SP_CZ: { player: null, pos: 'SP' },
-                        RP: { player: null, pos: 'RP' },
-                        CP: { player: null, pos: 'CP' }
+                        SP1_KR: { player: null, pos: 'SP' },
+                        SP2_KR: { player: null, pos: 'SP' },
+                        SP1_JP: { player: null, pos: 'SP' },
+                        SP2_JP: { player: null, pos: 'SP' },
+                        SP1_AU: { player: null, pos: 'SP' },
+                        SP2_AU: { player: null, pos: 'SP' },
+                        SP1_CZ: { player: null, pos: 'SP' },
+                        SP2_CZ: { player: null, pos: 'SP' }
                     };
                     for (let i = 1; i <= 9; i++) {
                         defaultStructure[i] = { player: null, pos: null };
@@ -696,8 +700,8 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        if (!state.lineup['SP_KR'].player || !state.lineup['SP_JP'].player || !state.lineup['SP_AU'].player || !state.lineup['SP_CZ'].player) {
-            showToast('請完整選擇四場比賽的先發投手', 'error');
+        if (PITCHER_SLOTS.some(slot => !state.lineup[slot].player)) {
+            showToast('請完整選擇四場比賽的先發投手（每場2位）', 'error');
             return;
         }
 
@@ -712,10 +716,10 @@ document.addEventListener('DOMContentLoaded', () => {
         submitBtn.disabled = true;
         submitBtn.style.opacity = '0.7';
         submitBtn.innerHTML = `
-                        < svg width = "20" height = "20" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2.5" style = "vertical-align: middle; margin-right: 8px; animation: spin 1s linear infinite;" >
-                            <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"></circle>
-            </svg >
-                        提交中...
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 8px; animation: spin 1s linear infinite;">
+                <circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="20"></circle>
+            </svg>
+            提交中...
         `;
 
         // Prepare Payload
@@ -761,11 +765,11 @@ document.addEventListener('DOMContentLoaded', () => {
             // User might want to update again. Let's keep "Update" if it was update.
             // Or just generic "Submit/Update"
             submitBtn.innerHTML = `
-        < svg width = "20" height = "20" viewBox = "0 0 24 24" fill = "none" stroke = "currentColor" stroke - width="2.5" style = "vertical-align: middle; margin-right: 8px;" >
-        <polyline points="20 6 9 17 4 12"></polyline>
-                </svg >
-            提交 / 更新陣容
-                `;
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align: middle; margin-right: 8px;">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+                提交 / 更新陣容
+            `;
         }
     }
 
@@ -816,7 +820,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
                         // Find key players (4th batter and SP)
                         const cleanLineup = lineup[4] ? lineup[4].player : '未定';
-                        const sp = lineup['SP'] ? lineup['SP'].player : '未定';
+                        const sp = (lineup['SP1_KR'] && lineup['SP1_KR'].player)
+                            || (lineup['SP_KR'] && lineup['SP_KR'].player)
+                            || (lineup['SP'] && lineup['SP'].player)
+                            || '未定';
 
                         card.innerHTML = `
                             <h3>${item.name}</h3>
@@ -897,12 +904,14 @@ document.addEventListener('DOMContentLoaded', () => {
                             { id: 8, label: '第八棒' },
                             { id: 9, label: '第九棒' },
                             // Duplicate 9th removed
-                            { id: 'SP_KR', label: '先發(韓)' },
-                            { id: 'SP_JP', label: '先發(日)' },
-                            { id: 'SP_AU', label: '先發(澳)' },
-                            { id: 'SP_CZ', label: '先發(捷)' },
-                            { id: 'RP', label: '中繼' },
-                            { id: 'CP', label: '後援' }
+                            { id: 'SP1_KR', label: '先發1(韓)' },
+                            { id: 'SP2_KR', label: '先發2(韓)' },
+                            { id: 'SP1_JP', label: '先發1(日)' },
+                            { id: 'SP2_JP', label: '先發2(日)' },
+                            { id: 'SP1_AU', label: '先發1(澳)' },
+                            { id: 'SP2_AU', label: '先發2(澳)' },
+                            { id: 'SP1_CZ', label: '先發1(捷)' },
+                            { id: 'SP2_CZ', label: '先發2(捷)' }
                         ];
 
                         positions.forEach(pos => {
@@ -927,7 +936,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 const data = lineup[pos.id];
 
                                 if (data && data.player) {
-                                    if (['SP_KR', 'SP_JP', 'SP_AU', 'SP_CZ', 'RP', 'CP'].includes(pos.id)) {
+                                    if (PITCHER_SLOTS.includes(pos.id)) {
                                         td.innerHTML = `<span style="font-weight:500; color: var(--info);">${data.player}</span>`;
                                     } else {
                                         td.innerHTML = `
