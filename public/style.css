@@ -1361,6 +1361,7 @@ tbody tr:hover .sticky-col {
     .field-panel {
         grid-column: span 1;
         order: -1;
+        position: static;
     }
 
     .input-group {
