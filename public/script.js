@@ -1204,7 +1204,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Convert to blob and copy
         try {
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const blob = await new Promise((resolve, reject) => {
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        resolve(blob);
+                    } else {
+                        reject(new Error('Failed to create blob'));
+                    }
+                }, 'image/png');
+            });
             const item = new ClipboardItem({
                 'image/png': blob
             });
@@ -1319,7 +1327,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Convert to blob and copy
         try {
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+            const blob = await new Promise((resolve, reject) => {
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        resolve(blob);
+                    } else {
+                        reject(new Error('Failed to create blob'));
+                    }
+                }, 'image/png');
+            });
             const item = new ClipboardItem({
                 'image/png': blob
             });
