@@ -1187,14 +1187,15 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Convert to blob and copy
-        canvas.toBlob(blob => {
-            const item = new ClipboardItem({ 'image/png': blob });
-            navigator.clipboard.write([item]).then(() => {
-                showToast('守備圖已複製到剪貼簿！', 'success');
-            }).catch(() => {
-                showToast('複製失敗，請手動截圖', 'error');
+        try {
+            const item = new ClipboardItem({
+                'image/png': new Promise(resolve => canvas.toBlob(resolve))
             });
-        });
+            await navigator.clipboard.write([item]);
+            showToast('守備圖已複製到剪貼簿！', 'success');
+        } catch {
+            showToast('複製失敗，請手動截圖', 'error');
+        }
     }
 
     // New Function: Copy Lineup Text List as Image
@@ -1287,14 +1288,15 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.fillText(`Generated at ${new Date().toLocaleString('zh-TW')}`, width / 2, height - 15);
 
         // Convert to blob and copy
-        canvas.toBlob(blob => {
-            const item = new ClipboardItem({ 'image/png': blob });
-            navigator.clipboard.write([item]).then(() => {
-                showToast('打序表已複製到剪貼簿！', 'success');
-            }).catch(() => {
-                showToast('複製失敗，請手動截圖', 'error');
+        try {
+            const item = new ClipboardItem({
+                'image/png': new Promise(resolve => canvas.toBlob(resolve))
             });
-        });
+            await navigator.clipboard.write([item]);
+            showToast('打序表已複製到剪貼簿！', 'success');
+        } catch {
+            showToast('複製失敗，請手動截圖', 'error');
+        }
     }
 
     // Helper function to generate mini field HTML
