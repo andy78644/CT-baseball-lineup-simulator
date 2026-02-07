@@ -1116,6 +1116,33 @@ document.addEventListener('DOMContentLoaded', () => {
         closeModal.focus();
     }
 
+    // Helper: try clipboard write, fall back to download
+    async function copyCanvasToClipboardOrDownload(canvas, successMsg, filename) {
+        // Check if ClipboardItem and clipboard.write are available
+        if (typeof ClipboardItem !== 'undefined' && navigator.clipboard && navigator.clipboard.write) {
+            try {
+                // Safari requires a Promise<Blob> (not a resolved Blob) inside ClipboardItem,
+                // and clipboard.write() must be called synchronously within the user gesture.
+                const blobPromise = new Promise((resolve, reject) => {
+                    canvas.toBlob(b => b ? resolve(b) : reject(new Error('toBlob failed')), 'image/png');
+                });
+                const item = new ClipboardItem({ 'image/png': blobPromise });
+                await navigator.clipboard.write([item]);
+                showToast(successMsg, 'success');
+                return;
+            } catch (err) {
+                console.warn('Clipboard write failed:', err);
+                // Fall through to download
+            }
+        }
+        // Fallback: download the image
+        const link = document.createElement('a');
+        link.download = filename;
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        showToast('此瀏覽器不支援複製圖片，已改為下載', 'info');
+    }
+
     // Generate field diagram canvas
     async function generateFieldCanvas(coachName, lineup) {
         const canvas = document.createElement('canvas');
@@ -1230,11 +1257,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function copyFieldAsImage(coachName, lineup) {
         try {
             const canvas = await generateFieldCanvas(coachName, lineup);
-            const item = new ClipboardItem({
-                'image/png': new Promise(resolve => canvas.toBlob(resolve))
-            });
-            await navigator.clipboard.write([item]);
-            showToast('守備圖已複製到剪貼簿！', 'success');
+            await copyCanvasToClipboardOrDownload(canvas, '守備圖已複製到剪貼簿！', '守備圖.png');
         } catch {
             showToast('複製失敗，請手動截圖', 'error');
         }
@@ -1391,11 +1414,7 @@ document.addEventListener('DOMContentLoaded', () => {
     async function copyLineupAsTextListImage(coachName, lineup) {
         try {
             const canvas = await generateLineupCanvas(coachName, lineup);
-            const item = new ClipboardItem({
-                'image/png': new Promise(resolve => canvas.toBlob(resolve))
-            });
-            await navigator.clipboard.write([item]);
-            showToast('打序表已複製到剪貼簿！', 'success');
+            await copyCanvasToClipboardOrDownload(canvas, '打序表已複製到剪貼簿！', '打序表.png');
         } catch {
             showToast('複製失敗，請手動截圖', 'error');
         }
