@@ -20,8 +20,8 @@ export default async function handler(req, res) {
                     return res.status(200).json({ found: false });
                 }
             } else {
-                // List all mode
-                const { rows } = await sql`SELECT * FROM lineups ORDER BY created_at DESC;`;
+                // List all mode (exclude email for privacy)
+                const { rows } = await sql`SELECT id, name, lineup, created_at FROM lineups ORDER BY created_at DESC;`;
                 return res.status(200).json({
                     message: "success",
                     data: rows
