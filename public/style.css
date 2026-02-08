@@ -834,21 +834,26 @@ h3 {
 }
 
 #mainShareButtons {
-    display: flex;
-    justify-content: flex-end;
-    gap: 12px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin: 20px auto;
+    max-width: 500px;
+    padding: 16px;
+    background: var(--bg-darker);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
 }
 
 #mainShareButtons .share-btn {
-    width: auto;
+    width: 100%;
     margin-top: 0;
-    font-size: 0.9rem;
-    padding: 8px 16px;
+    font-size: 0.85rem;
+    padding: 10px 14px;
     background: var(--bg-card);
     border: 1px solid var(--border);
     color: var(--text-muted);
+    border-radius: var(--radius-sm);
 }
 
 #mainShareButtons .share-btn:hover {
@@ -857,6 +862,15 @@ h3 {
     border-color: var(--accent);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive: stack buttons on smaller screens */
+@media (max-width: 480px) {
+    #mainShareButtons {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+        margin: 16px;
+    }
 }
 
 .history-grid {
